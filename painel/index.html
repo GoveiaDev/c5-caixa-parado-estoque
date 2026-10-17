@@ -10,178 +10,228 @@
 <meta property="og:image" content="https://goveiadev.github.io/c5-caixa-parado-estoque/painel/og.png">
 <meta property="og:type" content="website">
 <style>
-  @font-face { font-family: 'Manrope'; src: url('fonts/manrope-latin.woff2') format('woff2'); font-weight: 200 800; font-display: swap; }
   @font-face { font-family: 'Inter'; src: url('fonts/inter-latin.woff2') format('woff2'); font-weight: 300 800; font-display: swap; }
-  @font-face { font-family: 'Source Code Pro'; src: url('fonts/source-code-pro-latin.woff2') format('woff2'); font-weight: 200 900; font-display: swap; }
+  /* Paleta do C5: relatório no padrão Power BI — tela cinza, cartões brancos,
+     faixa azul-marinho e as cores de dados do tema padrão do Power BI. */
   :root {
     color-scheme: light;
-    /* Paleta própria do C5 — fundo branco, verde para barras e botões, dourado escuro para o valor em reais */
-    --fundo: #ffffff; --fundo-fundo: #10201a; --cartao: #f6f8f7; --cartao-forte: #ecf1ee; --regua: #dfe7e2;
-    --texto: #10201a; --texto-2: #4b5f55; --apoio: #6b7f75; --acao: #15803d; --acao-clara: #3a9d68; --metrica: #a16207;
-    --metrica-fundo: rgba(161,98,7,.06); --metrica-borda: rgba(161,98,7,.35); --r: 10px;
+    --tela: #f3f2f1; --visual: #ffffff; --borda: #e1dfdd; --borda-forte: #c8c6c4;
+    --texto: #252423; --texto-2: #605e5c; --apoio: #8a8886;
+    --faixa: #1b2a47; --faixa-2: #24365a; --faixa-texto: #c9d3e6;
+    --azul: #118dff; --azul-esc: #12239e; --laranja: #e66c37; --amarelo: #f2c80f;
+    --sel: #deecf9; --r: 6px;
+    --sombra: 0 1.6px 3.6px rgba(0,0,0,.08), 0 .3px .9px rgba(0,0,0,.06);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--fundo); color: var(--texto); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  body { background: var(--tela); color: var(--texto); font-family: 'Segoe UI', 'Inter', system-ui, sans-serif; font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
   button, select, input { font: inherit; color: inherit; }
-  .mono { font-family: 'Source Code Pro', ui-monospace, monospace; }
-  .rotulo { font-family: 'Source Code Pro', monospace; font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--apoio); }
-  .tela { max-width: 1480px; margin: 0 auto; padding: 18px 20px 28px; display: grid; gap: 14px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  @media (max-width: 720px) { .tela { padding: 12px 12px 24px; gap: 12px; } }
-  .cartao { background: var(--cartao); border: 1px solid var(--regua); border-radius: var(--r); padding: 14px 16px; min-width: 0; }
-  .cartao h2 { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-  .cartao .sub { color: var(--texto-2); font-size: 12.5px; margin-top: 2px; }
-  .topo-cartao { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .num-tab { font-variant-numeric: tabular-nums; }
 
-  .cabecalho { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; align-items: center; }
-  @media (max-width: 980px) { .cabecalho { grid-template-columns: 1fr; } }
-  h1 { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(22px, 2.4vw, 30px); letter-spacing: -0.03em; line-height: 1.1; margin-top: 6px; }
-  .lead { color: var(--texto-2); margin-top: 6px; max-width: 640px; }
-  .filtros { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 10px 14px; }
-  @media (max-width: 520px) { .filtros { grid-template-columns: 1fr; } }
-  .filtros .largo { grid-column: 1 / -1; }
-  .campo > .rotulo { display: block; margin-bottom: 5px; }
-  select, .num { width: 100%; background: var(--cartao-forte); border: 1px solid var(--regua); border-radius: 8px; padding: 7px 10px; font-size: 13px; }
-  select { cursor: pointer; } select option { background: var(--fundo); }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .chip { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--regua); background: transparent; cursor: pointer; font-size: 12px; color: var(--texto-2); }
-  .chip.mono { font-family: 'Source Code Pro', monospace; }
-  .chip[aria-pressed="true"] { background: var(--acao); border-color: var(--acao); color: #fff; font-weight: 600; }
-  .chip:hover { border-color: var(--acao-clara); }
-  .chip:focus-visible, select:focus-visible, .num:focus-visible, .linha:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--metrica); outline-offset: 2px; }
+  /* ── Faixa do relatório ─────────────────────────────── */
+  .faixa { background: var(--faixa); color: #fff; }
+  .faixa-in { max-width: 1480px; margin: 0 auto; padding: 14px 20px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 24px; align-items: center; }
+  @media (max-width: 1100px) { .faixa-in { grid-template-columns: 1fr; } }
+  .faixa h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .faixa .meta { color: var(--faixa-texto); font-size: 12px; margin-top: 2px; }
+  .faixa .meta b { color: #fff; font-weight: 600; }
+  .slicers { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+  .slicer label, .slicer .cab { display: block; font-size: 11px; color: var(--faixa-texto); margin-bottom: 4px; }
+  .slicer select, .slicer input { background: var(--faixa-2); border: 1px solid #3a4f78; color: #fff; border-radius: 4px; padding: 5px 8px; font-size: 12.5px; height: 30px; }
+  .slicer select { min-width: 190px; cursor: pointer; } .slicer select option { background: var(--faixa); }
+  .slicer input { width: 78px; }
+  .botoes { display: flex; border: 1px solid #3a4f78; border-radius: 4px; overflow: hidden; height: 30px; }
+  .botoes button { background: transparent; border: 0; border-right: 1px solid #3a4f78; padding: 0 10px; font-size: 12px; color: var(--faixa-texto); cursor: pointer; white-space: nowrap; }
+  .botoes button:last-child { border-right: 0; }
+  .botoes button[aria-pressed="true"] { background: var(--azul); color: #fff; font-weight: 600; }
+  .botoes button:hover:not([aria-pressed="true"]) { background: var(--faixa-2); color: #fff; }
+  button:focus-visible, select:focus-visible, input:focus-visible, .linha:focus-visible, .tile:focus-visible { outline: 2px solid var(--amarelo); outline-offset: 1px; }
+  @media (max-width: 560px) { .slicer select { min-width: 0; width: 100%; } .slicer { flex: 1 1 100%; } .botoes { overflow-x: auto; } }
 
-  .kpis { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-  @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (max-width: 520px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .kpi .v { font-family: 'Manrope', sans-serif; font-size: clamp(21px, 2.2vw, 29px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 6px; overflow-wrap: anywhere; }
-  .kpi .d { color: var(--texto-2); font-size: 12px; margin-top: 2px; }
-  .kpi.destaque { background: var(--metrica-fundo); border-color: var(--metrica-borda); }
-  .kpi.destaque .v { color: var(--metrica); }
+  /* ── Tela de visuais ────────────────────────────────── */
+  .tela { max-width: 1480px; margin: 0 auto; padding: 14px 20px 26px; display: grid; gap: 12px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  @media (max-width: 720px) { .tela { padding: 10px 10px 22px; gap: 10px; } }
+  .visual { background: var(--visual); border: 1px solid var(--borda); border-radius: var(--r); box-shadow: var(--sombra); padding: 12px 14px; min-width: 0; }
+  .visual h2 { font-size: 14px; font-weight: 600; color: var(--texto); }
+  .visual .sub { font-size: 11.5px; color: var(--texto-2); margin-top: 1px; }
+  .cab-visual { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 
-  .ranking { grid-column: 1 / span 8; display: flex; flex-direction: column; }
-  .empresa { grid-column: 9 / -1; }
-  .evolucao { grid-column: 1 / span 7; }
-  .setores { grid-column: 8 / -1; }
-  @media (max-width: 980px) { .ranking, .empresa, .evolucao, .setores { grid-column: 1 / -1; } }
+  /* Cartões */
+  .cartoes { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, 1.5fr); gap: 12px; }
+  @media (max-width: 1180px) { .cartoes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); } .contador { grid-column: 1 / -1; } }
+  .cartao { display: flex; flex-direction: column; gap: 2px; position: relative; padding-bottom: 8px; }
+  .cartao::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 0 2px 2px 0; background: var(--c, var(--azul)); }
+  .cartao .rot { font-size: 12px; color: var(--texto-2); font-weight: 600; }
+  .cartao .v { font-size: clamp(22px, 2.1vw, 30px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; overflow-wrap: anywhere; }
+  .cartao .d { font-size: 11.5px; color: var(--texto-2); }
+  .cartao svg { height: 26px; margin-top: auto; padding-top: 4px; }
+  .contador { background: var(--faixa); border-color: var(--faixa); color: #fff; }
+  .contador::before { background: var(--amarelo); }
+  .contador .rot { color: var(--faixa-texto); display: flex; align-items: center; gap: 6px; }
+  .contador .v { color: var(--amarelo); font-family: 'Cascadia Mono', 'Consolas', ui-monospace, monospace; }
+  .contador .d { color: var(--faixa-texto); }
+  .contador .ritmo { display: flex; gap: 14px; margin-top: 4px; font-size: 11.5px; color: var(--faixa-texto); flex-wrap: wrap; }
+  .contador .ritmo b { color: #fff; font-weight: 600; }
+  .pulso { width: 7px; height: 7px; border-radius: 50%; background: var(--amarelo); animation: pulso 1.6s ease-in-out infinite; flex: none; }
+  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 
-  .lista { overflow-y: auto; max-height: 520px; margin-top: 2px; }
-  .linha { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 3px 10px; align-items: center; width: 100%; padding: 7px 6px; border: 0; border-bottom: 1px solid var(--regua); background: transparent; cursor: pointer; text-align: left; border-radius: 6px; }
-  .linha:hover, .linha.sel { background: var(--cartao-forte); }
-  .linha .i { font-family: 'Source Code Pro', monospace; font-size: 11px; color: var(--apoio); }
-  .linha .n { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .linha .n small { color: var(--apoio); font-size: 11px; margin-left: 6px; }
-  .linha .val { font-family: 'Source Code Pro', monospace; font-size: 12.5px; text-align: right; white-space: nowrap; }
-  .linha .barra { grid-column: 2 / -1; height: 6px; border-radius: 3px; background: #e9efeb; position: relative; }
-  .linha .barra i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--acao-clara); }
-  .linha.sel .barra i { background: var(--metrica); }
-  .nota { color: var(--apoio); font-size: 12px; margin-top: 10px; }
+  .v-mapa { grid-column: 1 / span 7; }
+  .v-setor { grid-column: 8 / -1; }
+  .v-combo { grid-column: 1 / span 4; }
+  .v-tabela { grid-column: 5 / span 5; display: flex; flex-direction: column; }
+  .v-empresa { grid-column: 10 / -1; }
+  @media (max-width: 1180px) { .v-mapa, .v-setor { grid-column: 1 / -1; } .v-combo, .v-tabela { grid-column: span 6; } .v-empresa { grid-column: 1 / -1; } }
+  @media (max-width: 760px) { .v-combo, .v-tabela { grid-column: 1 / -1; } }
 
-  .ficha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-  .ficha > div { background: var(--cartao-forte); border-radius: 10px; padding: 10px 12px; }
-  .ficha .v { font-family: 'Manrope', sans-serif; font-size: 21px; font-weight: 800; letter-spacing: -0.02em; margin-top: 3px; }
-  .ficha .d { font-size: 11.5px; color: var(--texto-2); }
-  .ficha .ganho .v { color: var(--metrica); }
-  .regua-prazo { position: relative; height: 34px; margin: 18px 0 6px; }
-  .regua-prazo .trilho { position: absolute; left: 0; right: 0; top: 14px; height: 6px; border-radius: 3px; background: #e9efeb; }
-  .regua-prazo .faixa { position: absolute; top: 14px; height: 6px; background: rgba(58,157,104,.25); border-radius: 3px; }
-  .regua-prazo .marca { position: absolute; top: 6px; width: 2px; height: 22px; background: var(--texto); }
-  .regua-prazo .marca span { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-family: 'Source Code Pro', monospace; font-size: 10.5px; color: var(--texto-2); white-space: nowrap; }
-  .regua-prazo .emp { position: absolute; top: 9px; width: 16px; height: 16px; border-radius: 50%; margin-left: -8px; background: var(--metrica); border: 2px solid var(--fundo); }
-  input[type=range] { width: 100%; accent-color: var(--metrica); height: 26px; cursor: pointer; }
-  .alavanca { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--regua); }
+  /* Mapa de retângulos */
+  .mapa-tree { position: relative; width: 100%; }
+  .tile { position: absolute; border: 1px solid #fff; padding: 5px 7px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; color: #fff; transition: opacity .15s; }
+  .mapa-tree:hover .tile { opacity: .82; } .mapa-tree .tile:hover { opacity: 1; }
+  .tile.sel { box-shadow: inset 0 0 0 3px var(--texto); }
+  .tile .tn { font-size: 11.5px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile .tv { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .tile.grande .tn { font-size: 13px; } .tile.grande .tv { font-size: 18px; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; color: var(--texto-2); margin-bottom: 8px; }
+  .legenda span { display: inline-flex; align-items: center; gap: 5px; }
+  .bola { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+
+  /* Barras por setor */
+  .barras .linha { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8px; align-items: center; width: 100%; padding: 4px 2px; border: 0; background: transparent; text-align: left; cursor: pointer; border-radius: 3px; }
+  @media (max-width: 560px) { .barras .linha { grid-template-columns: 112px minmax(0, 1fr); } }
+  .barras .linha:hover, .barras .linha.sel { background: var(--sel); }
+  .barras .n { font-size: 12px; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+  .barras .trilho { display: flex; align-items: center; gap: 6px; height: 20px; }
+  .barras .trilho i { display: block; height: 18px; border-radius: 0 2px 2px 0; min-width: 2px; }
+  .barras .trilho b { font-size: 11.5px; font-weight: 600; white-space: nowrap; color: var(--texto); }
+
+  /* Tabela (matriz) */
+  .tabela-box { overflow: auto; max-height: 360px; flex: 1 1 auto; border-top: 1px solid var(--borda); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { position: sticky; top: 0; background: #fff; text-align: right; font-weight: 600; color: var(--texto); padding: 7px 6px; border-bottom: 1px solid var(--borda-forte); white-space: nowrap; z-index: 1; }
+  thead th:first-child, tbody td:first-child { text-align: left; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: #f3f2f1; } tbody tr.sel { background: var(--sel); }
+  tbody td { padding: 6px; border-bottom: 1px solid #edebe9; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tbody td:first-child { max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
+  td.barra-cel { position: relative; min-width: 96px; }
+  td.barra-cel i { position: absolute; right: 6px; top: 5px; bottom: 5px; background: rgba(17,141,255,.22); border-radius: 2px; }
+  td.barra-cel span { position: relative; }
+  tfoot td { position: sticky; bottom: 0; background: #faf9f8; font-weight: 700; padding: 7px 6px; border-top: 1px solid var(--borda-forte); text-align: right; white-space: nowrap; }
+  tfoot td:first-child { text-align: left; }
+  .nota { color: var(--apoio); font-size: 11px; margin-top: 8px; }
+
+  /* Empresa selecionada */
+  .bullet { position: relative; height: 26px; margin: 14px 0 4px; }
+  .bullet .faixa-set { position: absolute; top: 8px; height: 10px; background: #e1dfdd; border-radius: 2px; }
+  .bullet .barra-emp { position: absolute; left: 0; top: 10px; height: 6px; background: var(--azul-esc); border-radius: 2px; }
+  .bullet .meta-m { position: absolute; top: 2px; width: 2px; height: 22px; background: var(--laranja); }
+  .escala { display: flex; justify-content: space-between; gap: 8px; font-size: 10.5px; color: var(--apoio); }
+  .ficha { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .ficha > div { border: 1px solid var(--borda); border-radius: 4px; padding: 7px 9px; min-width: 0; }
+  .ficha .r { font-size: 11px; color: var(--texto-2); }
+  .ficha .v { font-size: 18px; font-weight: 700; margin-top: 1px; }
+  .ficha .ganho .v { color: var(--azul); }
+  .alavanca { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--borda); }
+  .alavanca label { font-size: 12px; color: var(--texto-2); }
+  .alavanca label b { color: var(--texto); }
+  input[type=range] { width: 100%; accent-color: var(--azul); height: 24px; cursor: pointer; }
 
   svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .eixo { font-family: 'Source Code Pro', monospace; font-size: 10.5px; fill: var(--apoio); }
-  .grade-linha { stroke: #e3e9e5; stroke-width: 1; }
-  .legenda { display: flex; gap: 14px; flex-wrap: wrap; margin: 0 0 8px; color: var(--texto-2); font-size: 12px; }
-  .legenda span { display: inline-flex; align-items: center; gap: 6px; }
-  .ponto { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+  .eixo { font-size: 10.5px; fill: var(--texto-2); }
+  .grade { stroke: #edebe9; stroke-width: 1; }
 
-  .dica { position: fixed; pointer-events: none; background: var(--fundo-fundo); border: 1px solid var(--regua); color: #fff; font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; opacity: 0; transition: opacity .1s; z-index: 20; max-width: 280px; }
-  .rodape { grid-column: 1 / -1; color: var(--apoio); font-size: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
-  .rodape a { color: var(--texto-2); }
-  details.metodo { grid-column: 1 / -1; color: var(--texto-2); font-size: 13px; }
+  .dica { position: fixed; pointer-events: none; background: #fff; border: 1px solid var(--borda-forte); box-shadow: 0 6px 16px rgba(0,0,0,.14); color: var(--texto); font-size: 12px; line-height: 1.5; padding: 8px 10px; border-radius: 4px; opacity: 0; transition: opacity .1s; z-index: 20; max-width: 280px; }
+  .dica b { font-weight: 600; }
+  details.metodo { grid-column: 1 / -1; color: var(--texto-2); font-size: 12.5px; }
   details.metodo summary { cursor: pointer; color: var(--texto); font-weight: 600; }
-  details.metodo ul { margin: 10px 0 0 18px; } details.metodo li { margin-bottom: 6px; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  details.metodo ul { margin: 8px 0 0 18px; } details.metodo li { margin-bottom: 5px; }
+  .rodape { grid-column: 1 / -1; color: var(--apoio); font-size: 11.5px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .rodape a { color: var(--texto-2); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
-<main class="tela">
-  <header class="cabecalho">
+<header class="faixa">
+  <div class="faixa-in">
     <div>
-      <div class="rotulo">Caixa parado no estoque · indústria de capital aberto</div>
-      <h1>Quanto caixa a indústria poderia liberar do estoque?</h1>
-      <p class="lead" id="lead">—</p>
+      <h1>Caixa parado no estoque · indústria de capital aberto</h1>
+      <div class="meta" id="faixaMeta">—</div>
     </div>
-    <div class="cartao filtros" role="group" aria-label="Filtros">
-      <div class="campo"><label class="rotulo" for="fSetor">Setor</label><select id="fSetor"></select></div>
-      <div class="campo"><label class="rotulo" for="fSelic">Custo do dinheiro (% ao ano)</label><input class="num mono" id="fSelic" type="number" min="0" max="50" step="0.25"></div>
-      <div class="campo"><span class="rotulo">Ano</span><div class="chips" id="fAno"></div></div>
-      <div class="campo"><span class="rotulo">Meta de prazo de estoque</span><div class="chips" id="fMeta"></div></div>
+    <div class="slicers" role="group" aria-label="Filtros">
+      <div class="slicer"><label for="fSetor">Setor</label><select id="fSetor"></select></div>
+      <div class="slicer"><span class="cab">Ano</span><div class="botoes" id="fAno"></div></div>
+      <div class="slicer"><span class="cab">Meta de prazo</span><div class="botoes" id="fMeta"></div></div>
+      <div class="slicer"><label for="fSelic">Taxa (% a.a.)</label><input id="fSelic" class="num-tab" type="number" min="0" max="50" step="0.25"></div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <section class="kpis" aria-live="polite">
-    <div class="cartao kpi"><div class="rotulo">Estoque total</div><div class="v" id="kEst">—</div><div class="d" id="kEstTxt">—</div></div>
-    <div class="cartao kpi destaque"><div class="rotulo">Acima da meta</div><div class="v" id="kExc">—</div><div class="d" id="kExcTxt">—</div></div>
-    <div class="cartao kpi"><div class="rotulo">Custo por ano</div><div class="v" id="kCusto">—</div><div class="d" id="kCustoTxt">—</div></div>
-    <div class="cartao kpi"><div class="rotulo">Empresas acima da meta</div><div class="v" id="kN">—</div><div class="d" id="kNTxt">—</div></div>
-    <div class="cartao kpi"><div class="rotulo">Nas 5 maiores</div><div class="v" id="kTop">—</div><div class="d">do total acima da meta</div></div>
-    <div class="cartao kpi"><div class="rotulo">Empresa típica acima</div><div class="v" id="kTip">—</div><div class="d" id="kTipTxt">—</div></div>
+<main class="tela">
+  <section class="cartoes" aria-live="polite">
+    <div class="visual cartao" style="--c:var(--azul-esc)"><div class="rot">Estoque total</div><div class="v num-tab" id="kEst">—</div><div class="d" id="kEstTxt">—</div><svg id="sEst" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+    <div class="visual cartao" style="--c:var(--azul)"><div class="rot">Acima da meta do setor</div><div class="v num-tab" id="kExc">—</div><div class="d" id="kExcTxt">—</div><svg id="sExc" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+    <div class="visual cartao" style="--c:var(--laranja)"><div class="rot">Custo por ano</div><div class="v num-tab" id="kCusto">—</div><div class="d" id="kCustoTxt">—</div><svg id="sCusto" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+    <div class="visual cartao" style="--c:#744ec2"><div class="rot">Empresas acima da meta</div><div class="v num-tab" id="kN">—</div><div class="d" id="kNTxt">—</div><svg id="sN" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+    <div class="visual cartao" style="--c:#197278"><div class="rot">Empresa típica acima</div><div class="v num-tab" id="kTip">—</div><div class="d" id="kTipTxt">—</div><svg id="sTip" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+    <div class="visual cartao contador">
+      <div class="rot"><i class="pulso"></i>Desde que você abriu esta página, custou</div>
+      <div class="v" id="cont">R$ 0</div>
+      <div class="d" id="contTxt">—</div>
+      <div class="ritmo"><span><b id="rDia">—</b> por dia</span><span><b id="rHora">—</b> por hora</span><span><b id="rMin">—</b> por minuto</span></div>
+    </div>
   </section>
 
-  <section class="cartao ranking" aria-labelledby="tRank">
-    <div class="topo-cartao" style="margin-bottom:6px">
-      <div><h2 id="tRank">Onde está o caixa parado</h2><div class="sub" id="rankSub">—</div></div>
-    </div>
-    <div class="lista" id="lista"></div>
+  <section class="visual v-mapa" aria-labelledby="tMapa">
+    <div class="cab-visual"><div><h2 id="tMapa">Estoque acima da meta, por empresa</h2><div class="sub" id="mapaSub">—</div></div></div>
+    <div class="legenda" id="legSetor"></div>
+    <div class="mapa-tree" id="mapa"></div>
+  </section>
+
+  <section class="visual v-setor" aria-labelledby="tSet">
+    <div class="cab-visual"><div><h2 id="tSet">Estoque acima da meta, por setor</h2><div class="sub">R$ no ano escolhido. Clique para filtrar.</div></div></div>
+    <div class="barras" id="setLista"></div>
+  </section>
+
+  <section class="visual v-combo" aria-labelledby="tEvo">
+    <div class="cab-visual"><div><h2 id="tEvo">Menos estoque, mais caro de carregar</h2><div class="sub" id="evoSub">—</div></div></div>
+    <div class="legenda"><span><i class="bola" style="background:var(--azul);border-radius:2px"></i>acima da meta (R$ bi)</span><span><i class="bola" style="background:var(--laranja)"></i>custo por ano (R$ bi)</span></div>
+    <div><svg id="svgEvo" role="img" aria-label="Estoque acima da meta e custo anual, 2021 a 2025"></svg></div>
+  </section>
+
+  <section class="visual v-tabela" aria-labelledby="tTab">
+    <div class="cab-visual"><div><h2 id="tTab">Empresas acima da meta</h2><div class="sub">Clique numa linha para ver o detalhe.</div></div></div>
+    <div class="tabela-box"><table>
+      <thead><tr><th>Empresa</th><th>Prazo (dias)</th><th>Meta (dias)</th><th>Acima da meta</th><th>Custo/ano</th></tr></thead>
+      <tbody id="lista"></tbody><tfoot id="tabTotal"></tfoot>
+    </table></div>
     <div class="nota" id="rankNota">—</div>
   </section>
 
-  <section class="cartao empresa" aria-labelledby="tEmp">
-    <div class="topo-cartao" style="margin-bottom:0">
-      <div><h2 id="tEmp">—</h2><div class="sub" id="empSub">—</div></div>
-    </div>
-    <div class="regua-prazo" id="regua" aria-hidden="true"></div>
+  <section class="visual v-empresa" aria-labelledby="tEmp">
+    <h2 id="tEmp">—</h2><div class="sub" id="empSub">—</div>
+    <div class="bullet" id="regua" aria-hidden="true"></div>
+    <div class="escala" id="escala"></div>
     <div class="ficha">
-      <div><div class="rotulo">Prazo de estoque</div><div class="v" id="eP">—</div><div class="d" id="ePTxt">—</div></div>
-      <div><div class="rotulo">Acima da meta</div><div class="v" id="eExc">—</div><div class="d" id="eExcTxt">—</div></div>
+      <div><div class="r">Prazo de estoque</div><div class="v num-tab" id="eP">—</div><div class="r" id="ePTxt">—</div></div>
+      <div><div class="r">Acima da meta</div><div class="v num-tab" id="eExc">—</div><div class="r" id="eExcTxt">—</div></div>
     </div>
     <div class="alavanca">
-      <label class="rotulo" for="corte" style="display:block">E se reduzisse o prazo em <span id="corteTxt" class="mono" style="color:var(--texto)">15 dias</span>?</label>
+      <label for="corte">E se reduzisse o prazo em <b id="corteTxt">15 dias</b>?</label>
       <input type="range" id="corte" min="0" max="90" value="15">
-      <div class="ficha">
-        <div class="ganho"><div class="rotulo">Caixa liberado</div><div class="v" id="eLib">—</div><div class="d">uma vez, no balanço</div></div>
-        <div class="ganho"><div class="rotulo">Custo evitado</div><div class="v" id="eEv">—</div><div class="d" id="eEvTxt">por ano</div></div>
+      <div class="ficha" style="margin-top:4px">
+        <div class="ganho"><div class="r">Caixa liberado</div><div class="v num-tab" id="eLib">—</div><div class="r">uma vez, no balanço</div></div>
+        <div class="ganho"><div class="r">Custo evitado</div><div class="v num-tab" id="eEv">—</div><div class="r" id="eEvTxt">por ano</div></div>
       </div>
     </div>
   </section>
 
-  <section class="cartao evolucao" aria-labelledby="tEvo">
-    <div class="topo-cartao" style="margin-bottom:4px">
-      <div><h2 id="tEvo">Menos estoque, mais caro de carregar</h2><div class="sub" id="evoSub">—</div></div>
-    </div>
-    <div class="legenda">
-      <span><i class="ponto" style="background:var(--acao-clara)"></i>acima da meta (R$ bi)</span>
-      <span><i class="ponto" style="background:var(--metrica);height:3px;width:16px;border-radius:0"></i>custo por ano à Selic média do ano (R$ bi)</span>
-    </div>
-    <div><svg id="svgEvo" role="img" aria-label="Estoque acima da meta e custo anual, 2021 a 2025"></svg></div>
-  </section>
-
-  <section class="cartao setores" aria-labelledby="tSet">
-    <div class="topo-cartao" style="margin-bottom:6px">
-      <div><h2 id="tSet">Por setor</h2><div class="sub">Estoque acima da meta no ano escolhido. Clique para filtrar.</div></div>
-    </div>
-    <div id="setLista"></div>
-  </section>
-
-  <details class="cartao metodo">
+  <details class="visual metodo">
     <summary>Como funciona — e o que este painel não permite afirmar</summary>
     <ul>
       <li><b>Fonte:</b> demonstrações financeiras padronizadas (DFP) da CVM, 2021 a 2025, balanço consolidado, última versão entregue; setor do cadastro de companhias abertas da CVM. Selic: série 4189 do SGS do Banco Central, média do ano.</li>
       <li><b>Prazo de estoque</b> = estoque de 31/12 ÷ custo do produto vendido × 365. <b>Acima da meta</b> = (prazo da empresa − prazo da meta) × custo do produto vendido por dia; empresa abaixo da meta conta zero.</li>
       <li><b>Meta:</b> mediana ou quartil mais curto (P25) do prazo das empresas do mesmo setor no mesmo ano. Empresas em recuperação judicial ficam fora das metas e dos totais.</li>
-      <li><b>Custo por ano:</b> só o custo de oportunidade do dinheiro (a taxa do filtro, Selic média do ano por padrão). Armazenagem, seguro, perda e obsolescência vêm por cima.</li>
+      <li><b>Custo por ano e contador:</b> só o custo de oportunidade do dinheiro (a taxa do filtro, Selic média do ano por padrão), dividido pelo tempo. Armazenagem, seguro, perda e obsolescência vêm por cima.</li>
       <li><b>Estoque alto não é, por si, desperdício.</b> Ciclo de produção longo, safra, importação e estratégia de compra explicam parte. A conta mostra onde perguntar, não o que cortar.</li>
       <li><b>O setor da CVM é amplo</b> e a DFP padronizada não separa matéria-prima, produto em processo e acabado. Só empresas de capital aberto.</li>
     </ul>
@@ -198,41 +248,54 @@
 const E = window.ESTOQUE, L = E.linhas;
 const ANOS = [...new Set(L.map(l => l.ano))].sort();
 const SETORES = [...new Set(L.map(l => l.setor))].sort((a, b) => a.localeCompare(b, 'pt'));
-const CURTO = { 'Máquinas, Equipamentos, Veículos e Peças': 'Máquinas e veículos', 'Agricultura (Açúcar, Álcool e Cana)': 'Açúcar e etanol' };
+const CURTO = { 'Máquinas, Equipamentos, Veículos e Peças': 'Máquinas e veículos', 'Agricultura (Açúcar, Álcool e Cana)': 'Açúcar e etanol', 'Metalurgia e Siderurgia': 'Metalurgia e siderurgia', 'Farmacêutico e Higiene': 'Farmacêutico e higiene', 'Petroquímicos e Borracha': 'Petroquímica e borracha', 'Têxtil e Vestuário': 'Têxtil e vestuário', 'Petróleo e Gás': 'Petróleo e gás' };
 const curto = s => CURTO[s] || s;
 const nf = d => new Intl.NumberFormat('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
 const num = (v, d = 0) => v == null || !isFinite(v) ? '—' : nf(d).format(v);
 const pct = v => v == null || !isFinite(v) ? '—' : nf(0).format(v * 100) + '%';
 const reais = mi => { const a = Math.abs(mi); return a >= 1000 ? `R$ ${num(a / 1000, 1)} bi` : a >= 10 ? `R$ ${num(a)} mi` : `R$ ${num(a, 1)} mi`; };
+const moeda = v => 'R$ ' + nf(0).format(v);
 function nomeBonito(n) { return n.replace(/\b(De|Da|Do|Das|Dos|E|Em|Para)\b/g, m => m.toLowerCase()).replace(/\bCia\b/, 'Cia.').trim(); }
 L.forEach(l => { l.nomeV = nomeBonito(l.nome); l.prazo = l.cpv > 0 ? l.estoque / l.cpv * 365 : null; });
 
-const S = { setor: 'todos', ano: ANOS[ANOS.length - 1], meta: 'mediana', taxa: null, sel: null, corte: 15 };
+/* Cores de dados do tema padrão do Power BI, por setor, na ordem do excesso de 2025 (o maior fica com o azul) */
+const COR_PBI = ['#118dff', '#12239e', '#e66c37', '#6b007b', '#e044a7', '#744ec2', '#d9b300', '#d64550', '#197278', '#1aab40'];
+let ORDEM_SETOR = SETORES;
+const corSetor = s => COR_PBI[ORDEM_SETOR.indexOf(s) % COR_PBI.length];
+const texClaro = hex => { const n = parseInt(hex.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) > 160; };
 
+const S = { setor: 'todos', ano: ANOS[ANOS.length - 1], meta: 'mediana', taxa: null, sel: null, corte: 15 };
 function quantil(vs, p) { const s = [...vs].sort((a, b) => a - b); if (!s.length) return null; const h = (s.length - 1) * p, lo = Math.floor(h), hi = Math.ceil(h); return s[lo] + (s[hi] - s[lo]) * (h - lo); }
 const metaCache = {};
 function metaDe(setor, ano, tipo) {
   const k = `${setor}|${ano}|${tipo}`;
-  if (!(k in metaCache)) metaCache[k] = quantil(L.filter(l => l.setor === setor && l.ano === ano && !l.rj && l.prazo != null).map(l => l.prazo), tipo === 'p25' ? .25 : .5);
+  if (!(k in metaCache)) metaCache[k] = quantil(L.filter(l => l.setor === setor && l.ano === ano && !l.rj && l.prazo != null).map(l => l.prazo), tipo === 'p25' ? .25 : tipo === 'p75' ? .75 : .5);
   return metaCache[k];
 }
-function calcular(ano) {
-  return L.filter(l => l.ano === ano && !l.rj && (S.setor === 'todos' || l.setor === S.setor)).map(l => {
+function calcular(ano, setor = S.setor) {
+  return L.filter(l => l.ano === ano && !l.rj && (setor === 'todos' || l.setor === setor)).map(l => {
     const meta = metaDe(l.setor, ano, S.meta);
-    return { ...l, meta, excesso: Math.max(0, (l.prazo - meta)) * l.cpv / 365 };
+    return { ...l, meta, excesso: Math.max(0, l.prazo - meta) * l.cpv / 365 };
   });
 }
+ORDEM_SETOR = (() => { const t = {}; SETORES.forEach(s => { t[s] = 0; }); L.filter(l => l.ano === 2025 && !l.rj).forEach(l => { const m = metaDe(l.setor, 2025, 'mediana'); t[l.setor] += Math.max(0, l.prazo - m) * l.cpv / 365; }); return [...SETORES].sort((a, b) => t[b] - t[a]); })();
 const taxaDoAno = ano => S.taxa != null ? S.taxa : (E.selic[ano] || 0);
+function resumo(rows, ano) {
+  const acima = rows.filter(r => r.excesso > 0), exc = acima.reduce((s, r) => s + r.excesso, 0);
+  return { est: rows.reduce((s, r) => s + r.estoque, 0), exc, custo: exc * taxaDoAno(ano), n: acima.length, total: rows.length,
+           dias: quantil(acima.map(r => r.prazo - r.meta), .5), por100: quantil(acima.map(r => r.excesso / r.cpv * 100), .5), acima };
+}
 
 /* ── Filtros ───────────────────────────────────────────── */
 const fSetor = document.getElementById('fSetor'), fAno = document.getElementById('fAno'), fMeta = document.getElementById('fMeta'), fSelic = document.getElementById('fSelic');
 fSetor.innerHTML = '<option value="todos">Todos os setores</option>' + SETORES.map(s => `<option value="${s}">${curto(s)}</option>`).join('');
-fAno.innerHTML = ANOS.map(a => `<button class="chip mono" data-a="${a}">${a}</button>`).join('');
-fMeta.innerHTML = [['mediana', 'Mediana do setor'], ['p25', 'Quartil mais curto']].map(([v, r]) => `<button class="chip" data-m="${v}">${r}</button>`).join('');
+fAno.innerHTML = ANOS.map(a => `<button data-a="${a}" class="chip">${a}</button>`).join('');
+fMeta.innerHTML = [['mediana', 'Mediana'], ['p25', 'Quartil mais curto']].map(([v, r]) => `<button data-m="${v}" class="chip">${r}</button>`).join('');
 fSetor.onchange = () => { S.setor = fSetor.value; S.sel = null; render(); };
-fAno.onclick = e => { const b = e.target.closest('.chip'); if (b) { S.ano = +b.dataset.a; render(); } };
-fMeta.onclick = e => { const b = e.target.closest('.chip'); if (b) { S.meta = b.dataset.m; render(); } };
+fAno.onclick = e => { const b = e.target.closest('button'); if (b) { S.ano = +b.dataset.a; render(); } };
+fMeta.onclick = e => { const b = e.target.closest('button'); if (b) { S.meta = b.dataset.m; render(); } };
 fSelic.oninput = () => { const v = parseFloat(fSelic.value.replace(',', '.')); S.taxa = isFinite(v) ? v / 100 : null; render(true); };
+fSelic.addEventListener('change', () => { if (fSelic.value === '') { S.taxa = null; render(); } });
 const corte = document.getElementById('corte');
 corte.oninput = () => { S.corte = +corte.value; renderEmpresa(calcular(S.ano)); };
 
@@ -240,60 +303,165 @@ const dica = document.getElementById('dica');
 function mostrarDica(html, ev) { dica.innerHTML = html; dica.style.opacity = 1; const x = Math.min(ev.clientX + 14, window.innerWidth - dica.offsetWidth - 8); const y = ev.clientY + 14 + dica.offsetHeight > window.innerHeight ? ev.clientY - dica.offsetHeight - 10 : ev.clientY + 14; dica.style.left = x + 'px'; dica.style.top = y + 'px'; }
 const esconderDica = () => { dica.style.opacity = 0; };
 
-function renderKpis(rows) {
-  const taxa = taxaDoAno(S.ano), est = rows.reduce((s, r) => s + r.estoque, 0), exc = rows.reduce((s, r) => s + r.excesso, 0);
-  const acima = rows.filter(r => r.excesso > 0);
-  document.getElementById('kEst').textContent = reais(est);
-  document.getElementById('kEstTxt').textContent = `${rows.length} industriais · ${S.ano}`;
-  document.getElementById('kExc').textContent = reais(exc);
-  document.getElementById('kExcTxt').textContent = `${pct(exc / est)} do estoque · meta: ${S.meta === 'p25' ? 'quartil mais curto' : 'mediana do setor'}`;
-  document.getElementById('kCusto').textContent = reais(exc * taxa);
-  document.getElementById('kCustoTxt').textContent = `a ${num(taxa * 100, 2)}% ao ano${S.taxa == null ? ' (Selic média)' : ''}, antes de armazenagem e perda`;
-  document.getElementById('kN').textContent = `${acima.length} de ${rows.length}`;
-  document.getElementById('kNTxt').textContent = 'com prazo de estoque acima da meta';
-  const top = [...acima].sort((a, b) => b.excesso - a.excesso).slice(0, 5).reduce((s, r) => s + r.excesso, 0);
-  document.getElementById('kTop').textContent = exc ? pct(top / exc) : '—';
-  const dias = acima.map(r => r.prazo - r.meta), por100 = acima.map(r => r.excesso / r.cpv * 100);
-  const md = quantil(dias, .5), mp = quantil(por100, .5);
-  document.getElementById('kTip').textContent = md == null ? '—' : `+${num(md)} dias`;
-  document.getElementById('kTipTxt').textContent = mp == null ? '—' : `${reais(mp)} parados a cada R$ 100 mi de custo`;
-  return { exc, acima };
+/* ── Cartões com minigráfico de 2021 a 2025 ─────────────── */
+function sparkline(id, vals, cor) {
+  const el = document.getElementById(id), ok = vals.filter(v => v != null);
+  if (!ok.length) { el.innerHTML = ''; return; }
+  const min = Math.min(...ok), max = Math.max(...ok), Y = v => 23 - (max === min ? .5 : (v - min) / (max - min)) * 20, X = i => 4 + i / (vals.length - 1) * 112;
+  const pts = vals.map((v, i) => v == null ? null : [X(i), Y(v)]).filter(Boolean);
+  const k = ANOS.indexOf(S.ano);
+  el.innerHTML = `<path d="M${pts.map(p => p.join(',')).join('L')}" fill="none" stroke="${cor}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>` +
+    (vals[k] != null ? `<circle cx="${X(k)}" cy="${Y(vals[k])}" r="2.6" fill="${cor}"/>` : '');
+}
+function renderCartoes(r) {
+  const taxa = taxaDoAno(S.ano);
+  document.getElementById('kEst').textContent = reais(r.est);
+  document.getElementById('kEstTxt').textContent = `${r.total} industriais em ${S.ano}`;
+  document.getElementById('kExc').textContent = reais(r.exc);
+  document.getElementById('kExcTxt').textContent = `${pct(r.exc / r.est)} do estoque · meta: ${S.meta === 'p25' ? 'quartil mais curto' : 'mediana'}`;
+  document.getElementById('kCusto').textContent = reais(r.custo);
+  document.getElementById('kCustoTxt').textContent = `a ${num(taxa * 100, 2)}% a.a.${S.taxa == null ? ' (Selic média)' : ''}`;
+  document.getElementById('kN').textContent = `${r.n} de ${r.total}`;
+  const top = [...r.acima].sort((a, b) => b.excesso - a.excesso).slice(0, 5).reduce((s, x) => s + x.excesso, 0);
+  document.getElementById('kNTxt').textContent = r.exc ? `${pct(top / r.exc)} do valor está nas 5 maiores` : '—';
+  document.getElementById('kTip').textContent = r.dias == null ? '—' : `+${num(r.dias)} dias`;
+  document.getElementById('kTipTxt').textContent = r.por100 == null ? '—' : `${reais(r.por100)} parados a cada R$ 100 mi de custo`;
+  const serie = ANOS.map(a => resumo(calcular(a), a));
+  sparkline('sEst', serie.map(x => x.est), '#12239e'); sparkline('sExc', serie.map(x => x.exc), '#118dff');
+  sparkline('sCusto', serie.map(x => x.custo), '#e66c37'); sparkline('sN', serie.map(x => x.n), '#744ec2'); sparkline('sTip', serie.map(x => x.dias), '#197278');
+  renderContador(r.custo, taxa);
+  return serie;
 }
 
-function renderRanking(rows) {
+/* ── Contador ao vivo ──────────────────────────────────── */
+let custoAnualMi = 0, acumulado = 0, ultimo = performance.now();
+function tique() {
+  const agora = performance.now();
+  acumulado += custoAnualMi * 1e6 * (agora - ultimo) / (365.25 * 86400 * 1000);
+  ultimo = agora;
+  document.getElementById('cont').textContent = moeda(acumulado);
+  requestAnimationFrame(tique);
+}
+function renderContador(custoMi, taxa) {
+  custoAnualMi = custoMi;
+  const dia = custoMi * 1e6 / 365.25;
+  document.getElementById('rDia').textContent = moeda(dia);
+  document.getElementById('rHora').textContent = moeda(dia / 24);
+  document.getElementById('rMin').textContent = moeda(dia / 1440);
+  document.getElementById('contTxt').textContent = `custo de oportunidade de ${reais(custoMi)} por ano, a ${num(taxa * 100, 2)}%, sem armazenagem e perda`;
+}
+requestAnimationFrame(tique);
+
+/* ── Mapa de retângulos (squarified treemap) ─────────────── */
+function squarify(itens, x, y, w, h) {
+  const total = itens.reduce((s, i) => s + i.v, 0), out = [];
+  let resto = itens.map(i => ({ ...i, a: i.v / total * w * h }));
+  while (resto.length) {
+    const lado = Math.min(w, h); let linha = [], pior = Infinity;
+    while (resto.length) {
+      const cand = [...linha, resto[0]], soma = cand.reduce((s, i) => s + i.a, 0);
+      const p = Math.max(...cand.map(i => Math.max(lado * lado * i.a / (soma * soma), (soma * soma) / (lado * lado * i.a))));
+      if (p > pior) break;
+      pior = p; linha = cand; resto = resto.slice(1);
+    }
+    const soma = linha.reduce((s, i) => s + i.a, 0);
+    if (w >= h) { const lw = soma / h; let yy = y; linha.forEach(i => { const ih = i.a / lw; out.push({ ...i, x, y: yy, w: lw, h: ih }); yy += ih; }); x += lw; w -= lw; }
+    else { const lh = soma / w; let xx = x; linha.forEach(i => { const iw = i.a / lh; out.push({ ...i, x: xx, y, w: iw, h: lh }); xx += iw; }); y += lh; h -= lh; }
+  }
+  return out;
+}
+function renderMapa(rows) {
+  const box = document.getElementById('mapa');
   const l = rows.filter(r => r.excesso > 0).sort((a, b) => b.excesso - a.excesso);
-  const max = l.length ? l[0].excesso : 1;
-  const box = document.getElementById('lista');
-  box.innerHTML = l.map((r, i) => `<button class="linha${r.id === S.sel ? ' sel' : ''}" data-id="${r.id}">
-    <span class="i">${i + 1}</span><span class="n">${r.nomeV}<small>${curto(r.setor)}</small></span><span class="val">${reais(r.excesso)}</span>
-    <span class="barra"><i style="width:${r.excesso / max * 100}%"></i></span></button>`).join('') || '<div class="sub" style="padding:12px 4px">Nenhuma empresa acima da meta neste recorte.</div>';
-  box.querySelectorAll('.linha').forEach(b => {
-    const r = l.find(x => x.id === +b.dataset.id);
-    b.onclick = () => { S.sel = r.id; render(); };
-    b.onmousemove = ev => mostrarDica(`<b>${r.nomeV}</b><br>prazo ${num(r.prazo)} dias · meta ${num(r.meta)} dias<br>estoque ${reais(r.estoque)}<br>acima da meta ${reais(r.excesso)}`, ev);
-    b.onmouseleave = esconderDica;
+  const W = box.clientWidth || 600, H = W < 520 ? 320 : Math.round(Math.min(400, W * .5));
+  box.style.height = H + 'px';
+  if (!l.length) { box.innerHTML = '<div class="sub" style="padding:12px 4px">Nenhuma empresa acima da meta neste recorte.</div>'; document.getElementById('legSetor').innerHTML = ''; return; }
+  const tot = l.reduce((s, r) => s + r.excesso, 0);
+  box.innerHTML = squarify(l.map(r => ({ r, v: r.excesso })), 0, 0, W, H).map(({ r, x, y, w, h }) => {
+    const cor = corSetor(r.setor), mostra = w > 58 && h > 30, valor = w > 74 && h > 42, grande = w > 170 && h > 90;
+    return `<div class="tile${grande ? ' grande' : ''}${r.id === S.sel ? ' sel' : ''}" data-id="${r.id}" tabindex="0" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${cor};color:${texClaro(cor) ? '#252423' : '#fff'}">${mostra ? `<span class="tn">${r.nomeV}</span>${valor ? `<span class="tv">${reais(r.excesso)}</span>` : ''}` : ''}</div>`;
+  }).join('');
+  box.querySelectorAll('.tile').forEach(el => {
+    const r = l.find(x => x.id === +el.dataset.id);
+    el.onclick = () => { S.sel = r.id; render(); };
+    el.onkeydown = e => { if (e.key === 'Enter') el.onclick(); };
+    el.onmousemove = ev => mostrarDica(`<b>${r.nomeV}</b><br>${curto(r.setor)}<br>Prazo de estoque: <b>${num(r.prazo)} dias</b> (meta ${num(r.meta)})<br>Acima da meta: <b>${reais(r.excesso)}</b> · ${pct(r.excesso / tot)} do total`, ev);
+    el.onmouseleave = esconderDica;
   });
-  document.getElementById('rankSub').textContent = `${l.length} empresas com prazo de estoque acima da meta do próprio setor em ${S.ano}, do maior valor para o menor. Clique para ver a empresa.`;
-  const rj = L.filter(x => x.ano === S.ano && x.rj && (S.setor === 'todos' || x.setor === S.setor));
-  document.getElementById('rankNota').textContent = rj.length ? `Fora da conta por estarem em recuperação judicial: ${rj.map(x => x.nomeV).join(', ')}.` : '';
-  return l;
+  const vis = ORDEM_SETOR.filter(s => l.some(r => r.setor === s));
+  document.getElementById('legSetor').innerHTML = vis.map(s => `<span><i class="bola" style="background:${corSetor(s)}"></i>${curto(s)}</span>`).join('');
+  document.getElementById('mapaSub').textContent = `${l.length} empresas com prazo de estoque acima da meta do próprio setor em ${S.ano}. Área = R$ acima da meta. Clique para ver a empresa.`;
 }
 
+/* ── Barras por setor ──────────────────────────────────── */
+function renderSetores() {
+  const rows = calcular(S.ano, 'todos');
+  const por = SETORES.map(s => ({ s, exc: rows.filter(r => r.setor === s).reduce((t, r) => t + r.excesso, 0) })).sort((a, b) => b.exc - a.exc);
+  const max = por[0].exc || 1;
+  const box = document.getElementById('setLista');
+  box.innerHTML = por.map(p => `<button class="linha${p.s === S.setor ? ' sel' : ''}" data-s="${p.s}"><span class="n">${curto(p.s)}</span>
+    <span class="trilho"><i style="width:${p.exc / max * 78}%;background:${S.setor === 'todos' || p.s === S.setor ? '#118dff' : '#a7cff7'}"></i><b>${reais(p.exc)}</b></span></button>`).join('');
+  box.querySelectorAll('.linha').forEach(b => b.onclick = () => { S.setor = S.setor === b.dataset.s ? 'todos' : b.dataset.s; S.sel = null; render(); });
+}
+
+/* ── Colunas + linha: estoque acima da meta × custo ─────── */
+const svgEvo = document.getElementById('svgEvo');
+function renderEvo(serie) {
+  const s = serie.map((x, i) => ({ a: ANOS[i], exc: x.exc / 1000, custo: x.custo / 1000 }));
+  const W = Math.max(280, svgEvo.parentElement.clientWidth), H = 220, m = { t: 18, r: 34, b: 24, l: 30 };
+  const maxE = Math.max(...s.map(x => x.exc)) * 1.18 || 1, maxC = Math.max(...s.map(x => x.custo)) * 2.2 || 1;   // a linha fica na metade de baixo, longe dos rótulos das colunas
+  const bw = (W - m.l - m.r) / s.length, X = i => m.l + i * bw + bw / 2;
+  const Y = v => H - m.b - v / maxE * (H - m.t - m.b), Yc = v => H - m.b - v / maxC * (H - m.t - m.b);
+  const passo = [1, 2, 5, 10, 20, 50].find(p => maxE / p <= 5) || 100;
+  let g = '';
+  for (let v = 0; v <= maxE; v += passo) g += `<line class="grade" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="eixo" x="${m.l - 5}" y="${Y(v) + 3.5}" text-anchor="end">${num(v)}</text>`;
+  s.forEach((x, i) => {
+    g += `<rect x="${X(i) - bw * .32}" y="${Y(x.exc)}" width="${bw * .64}" height="${H - m.b - Y(x.exc)}" fill="#118dff" fill-opacity="${x.a === S.ano ? 1 : .55}"/>`;
+    g += `<text class="eixo" x="${X(i)}" y="${Y(x.exc) - 4}" text-anchor="middle" style="fill:#252423;font-weight:600">${num(x.exc, 1)}</text>`;
+    g += `<text class="eixo" x="${X(i)}" y="${H - 7}" text-anchor="middle"${x.a === S.ano ? ' style="fill:#252423;font-weight:700"' : ''}>${x.a}</text>`;
+  });
+  g += `<path d="${s.map((x, i) => `${i ? 'L' : 'M'}${X(i)},${Yc(x.custo)}`).join('')}" fill="none" stroke="#e66c37" stroke-width="2.4"/>`;
+  s.forEach((x, i) => { g += `<circle cx="${X(i)}" cy="${Yc(x.custo)}" r="4" fill="#fff" stroke="#e66c37" stroke-width="2"/><text class="eixo" x="${X(i) + 7}" y="${Yc(x.custo) + 3.5}" style="fill:#c4501f;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:3px">${num(x.custo, 1)}</text>`; });
+  svgEvo.setAttribute('viewBox', `0 0 ${W} ${H}`); svgEvo.innerHTML = g;
+  const p = s[0], u = s[s.length - 1];
+  document.getElementById('evoSub').textContent = S.taxa != null
+    ? `Taxa fixa em ${num(S.taxa * 100, 2)}%: o custo acompanha o estoque. Apague a taxa para voltar à Selic de cada ano.`
+    : `${p.a}→${u.a}: estoque acima da meta ${u.exc < p.exc ? '−' : '+'}${pct(Math.abs(u.exc / p.exc - 1))}; custo de carregar ×${num(u.custo / p.custo, 1)} (Selic média ${num(E.selic[p.a] * 100, 1)}% → ${num(E.selic[u.a] * 100, 1)}%).`;
+}
+
+/* ── Tabela ────────────────────────────────────────────── */
+function renderTabela(rows) {
+  const taxa = taxaDoAno(S.ano), l = rows.filter(r => r.excesso > 0).sort((a, b) => b.excesso - a.excesso), max = l.length ? l[0].excesso : 1;
+  const corpo = document.getElementById('lista');
+  corpo.innerHTML = l.map(r => `<tr class="linha${r.id === S.sel ? ' sel' : ''}" data-id="${r.id}" tabindex="0">
+    <td title="${r.nomeV} · ${curto(r.setor)}"><i class="bola" style="background:${corSetor(r.setor)};margin-right:6px"></i>${r.nomeV}</td>
+    <td>${num(r.prazo)}</td><td>${num(r.meta)}</td>
+    <td class="barra-cel"><i style="width:${r.excesso / max * 88}%"></i><span>${reais(r.excesso)}</span></td><td>${reais(r.excesso * taxa)}</td></tr>`).join('')
+    || '<tr><td colspan="5" style="text-align:left;color:#8a8886">Nenhuma empresa acima da meta neste recorte.</td></tr>';
+  const tot = l.reduce((s, r) => s + r.excesso, 0);
+  document.getElementById('tabTotal').innerHTML = `<tr><td>Total · ${l.length} empresas</td><td></td><td></td><td>${reais(tot)}</td><td>${reais(tot * taxa)}</td></tr>`;
+  corpo.querySelectorAll('tr.linha').forEach(tr => {
+    tr.onclick = () => { S.sel = +tr.dataset.id; render(); };
+    tr.onkeydown = e => { if (e.key === 'Enter') tr.onclick(); };
+  });
+  const rj = L.filter(x => x.ano === S.ano && x.rj && (S.setor === 'todos' || x.setor === S.setor));
+  document.getElementById('rankNota').textContent = rj.length ? `Fora da conta (recuperação judicial): ${rj.map(x => x.nomeV).join(', ')}.` : '';
+}
+
+/* ── Empresa selecionada ───────────────────────────────── */
 function renderEmpresa(rows) {
   const r = rows.find(x => x.id === S.sel);
-  const tit = document.getElementById('tEmp'), sub = document.getElementById('empSub');
-  if (!r) { tit.textContent = 'Escolha uma empresa'; sub.textContent = 'Clique numa empresa da lista.'; document.getElementById('regua').innerHTML = ''; return; }
-  const med = metaDe(r.setor, S.ano, 'mediana'), p25 = metaDe(r.setor, S.ano, 'p25'), taxa = taxaDoAno(S.ano);
-  const p75 = quantil(L.filter(l => l.setor === r.setor && l.ano === S.ano && !l.rj).map(l => l.prazo), .75);
-  tit.textContent = r.nomeV;
-  sub.textContent = `${curto(r.setor)} · ${S.ano} · custo do produto vendido ${reais(r.cpv)} · estoque ${reais(r.estoque)}`;
-  const max = Math.max(r.prazo, p75, med) * 1.12, P = v => Math.max(0, Math.min(100, v / max * 100));
-  document.getElementById('regua').innerHTML = `<div class="trilho"></div><div class="faixa" style="left:${P(p25)}%;width:${P(p75) - P(p25)}%"></div>
-    <div class="marca" style="left:${P(med)}%"><span>mediana ${num(med)}d</span></div><div class="emp" style="left:${P(r.prazo)}%" title="${num(r.prazo)} dias"></div>`;
+  if (!r) { document.getElementById('tEmp').textContent = 'Escolha uma empresa'; document.getElementById('empSub').textContent = 'Clique no mapa ou na tabela.'; document.getElementById('regua').innerHTML = ''; document.getElementById('escala').innerHTML = ''; return; }
+  const med = metaDe(r.setor, S.ano, 'mediana'), p25 = metaDe(r.setor, S.ano, 'p25'), p75 = metaDe(r.setor, S.ano, 'p75'), taxa = taxaDoAno(S.ano);
+  document.getElementById('tEmp').textContent = r.nomeV;
+  document.getElementById('empSub').textContent = `${curto(r.setor)} · ${S.ano} · estoque ${reais(r.estoque)}`;
+  const max = Math.max(r.prazo, p75, med) * 1.1, P = v => Math.max(0, Math.min(100, v / max * 100));
+  document.getElementById('regua').innerHTML = `<div class="faixa-set" style="left:${P(p25)}%;width:${P(p75) - P(p25)}%" title="metade central do setor"></div><div class="barra-emp" style="width:${P(r.prazo)}%"></div><div class="meta-m" style="left:${P(r.meta)}%" title="meta"></div>`;
+  document.getElementById('escala').innerHTML = `<span>0</span><span>barra = empresa · traço laranja = meta · cinza = metade central do setor</span><span>${num(max)} dias</span>`;
   document.getElementById('eP').textContent = `${num(r.prazo)} dias`;
-  document.getElementById('ePTxt').textContent = `meta ${num(r.meta)} dias · faixa central do setor ${num(p25)}–${num(p75)}`;
+  document.getElementById('ePTxt').textContent = `meta ${num(r.meta)} · setor ${num(p25)}–${num(p75)}`;
   document.getElementById('eExc').textContent = r.excesso > 0 ? reais(r.excesso) : 'na meta';
-  document.getElementById('eExcTxt').textContent = r.excesso > 0 ? `${reais(r.excesso * taxa)} por ano a ${num(taxa * 100, 2)}%` : 'prazo igual ou abaixo da meta';
+  document.getElementById('eExcTxt').textContent = r.excesso > 0 ? `${reais(r.excesso * taxa)} por ano` : 'igual ou abaixo da meta';
   const lib = Math.min(S.corte, r.prazo) * r.cpv / 365;
   document.getElementById('corteTxt').textContent = `${S.corte} ${S.corte === 1 ? 'dia' : 'dias'}`;
   document.getElementById('eLib').textContent = reais(lib);
@@ -301,59 +469,22 @@ function renderEmpresa(rows) {
   document.getElementById('eEvTxt').textContent = `por ano, a ${num(taxa * 100, 2)}%`;
 }
 
-const svgEvo = document.getElementById('svgEvo');
-function renderEvo() {
-  const serie = ANOS.map(a => { const rows = calcular(a); const exc = rows.reduce((s, r) => s + r.excesso, 0); return { a, exc: exc / 1000, custo: exc * taxaDoAno(a) / 1000 }; });
-  const W = Math.max(300, svgEvo.parentElement.clientWidth), H = W < 520 ? 220 : 250, m = { t: 16, r: 46, b: 26, l: 44 };
-  const maxE = Math.max(...serie.map(s => s.exc)) * 1.15 || 1, maxC = Math.max(...serie.map(s => s.custo)) * 2.3 || 1;   // a linha fica na metade de baixo, longe dos rótulos das barras
-  const bw = (W - m.l - m.r) / serie.length, X = i => m.l + i * bw + bw / 2;
-  const Y = v => H - m.b - v / maxE * (H - m.t - m.b), Yc = v => H - m.b - v / maxC * (H - m.t - m.b);
-  let g = '';
-  const passo = [1, 2, 5, 10, 20, 50].find(p => maxE / p <= 5) || 100;
-  for (let v = 0; v <= maxE; v += passo) g += `<line class="grade-linha" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="eixo" x="${m.l - 6}" y="${Y(v) + 3.5}" text-anchor="end">${num(v)}</text>`;
-  serie.forEach((s, i) => {
-    g += `<rect x="${X(i) - bw * .3}" y="${Y(s.exc)}" width="${bw * .6}" height="${H - m.b - Y(s.exc)}" rx="3" fill="var(--acao-clara)" fill-opacity="${s.a === S.ano ? .9 : .45}"/>`;
-    g += `<text class="eixo" x="${X(i)}" y="${H - 8}" text-anchor="middle"${s.a === S.ano ? ' style="fill:#10201a;font-weight:700"' : ''}>${s.a}</text>`;
-    g += `<text class="eixo" x="${X(i)}" y="${Y(s.exc) - 5}" text-anchor="middle" style="fill:#4b5f55">${num(s.exc, 1)}</text>`;
-  });
-  g += `<path d="${serie.map((s, i) => `${i ? 'L' : 'M'}${X(i)},${Yc(s.custo)}`).join('')}" fill="none" stroke="var(--metrica)" stroke-width="2.5"/>`;
-  serie.forEach((s, i) => { g += `<circle cx="${X(i)}" cy="${Yc(s.custo)}" r="4" fill="var(--metrica)"/><text class="eixo" x="${X(i)}" y="${Yc(s.custo) - 9}" text-anchor="middle" style="fill:#7a4a05;font-weight:700;paint-order:stroke;stroke:#ffffff;stroke-width:4px">${W < 520 ? '' : 'R$ '}${num(s.custo, 1)}</text>`; });
-  svgEvo.setAttribute('viewBox', `0 0 ${W} ${H}`); svgEvo.innerHTML = g;
-  const p = serie[0], u = serie[serie.length - 1];
-  document.getElementById('evoSub').textContent = S.taxa != null
-    ? `Com a taxa fixa em ${num(S.taxa * 100, 2)}%, o custo acompanha o estoque. Apague o campo para voltar à Selic média de cada ano.`
-    : `De ${p.a} a ${u.a}, o estoque acima da meta foi de R$ ${num(p.exc, 1)} bi para R$ ${num(u.exc, 1)} bi (${u.exc < p.exc ? '−' : '+'}${pct(Math.abs(u.exc / p.exc - 1))}), mas o custo de carregá-lo foi de R$ ${num(p.custo, 1)} bi para R$ ${num(u.custo, 1)} bi: a Selic média passou de ${num(E.selic[p.a] * 100, 1)}% para ${num(E.selic[u.a] * 100, 1)}%.`;
-}
-
-function renderSetores() {
-  const salvo = S.setor; S.setor = 'todos';
-  const rows = calcular(S.ano); S.setor = salvo;
-  const por = SETORES.map(s => ({ s, exc: rows.filter(r => r.setor === s).reduce((t, r) => t + r.excesso, 0) })).sort((a, b) => b.exc - a.exc);
-  const max = por[0].exc || 1;
-  const box = document.getElementById('setLista');
-  box.innerHTML = por.map(p => `<button class="linha${p.s === S.setor ? ' sel' : ''}" data-s="${p.s}" style="grid-template-columns:minmax(0,1fr) auto">
-    <span class="n">${curto(p.s)}</span><span class="val">${reais(p.exc)}</span><span class="barra" style="grid-column:1/-1"><i style="width:${p.exc / max * 100}%"></i></span></button>`).join('');
-  box.querySelectorAll('.linha').forEach(b => b.onclick = () => { S.setor = S.setor === b.dataset.s ? 'todos' : b.dataset.s; S.sel = null; render(); });
-}
-
 function render(soTaxa) {
   fSetor.value = S.setor;
-  fAno.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', +b.dataset.a === S.ano));
-  fMeta.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === S.meta));
+  fAno.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.a === S.ano));
+  fMeta.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === S.meta));
   if (!soTaxa) fSelic.value = S.taxa != null ? (S.taxa * 100).toFixed(2) : (E.selic[S.ano] * 100).toFixed(2);
-  const rows = calcular(S.ano);
-  const { acima } = renderKpis(rows);
-  if (!rows.some(r => r.id === S.sel)) {
+  const rows = calcular(S.ano), r = resumo(rows, S.ano);
+  if (!rows.some(x => x.id === S.sel)) {
     // empresa inicial: a de excesso mais próximo da mediana dos excessos — a "típica", sem destacar ninguém
-    const ex = acima.map(r => r.excesso), md = quantil(ex, .5);
-    S.sel = acima.length ? acima.reduce((a, b) => Math.abs(b.excesso - md) < Math.abs(a.excesso - md) ? b : a).id : null;
+    const md = quantil(r.acima.map(x => x.excesso), .5);
+    S.sel = r.acima.length ? r.acima.reduce((a, b) => Math.abs(b.excesso - md) < Math.abs(a.excesso - md) ? b : a).id : null;
   }
-  renderRanking(rows); renderEmpresa(rows); renderEvo(); renderSetores();
+  const serie = renderCartoes(r);
+  renderMapa(rows); renderSetores(); renderEvo(serie); renderTabela(rows); renderEmpresa(rows);
+  document.getElementById('faixaMeta').innerHTML = `<b>${reais(r.exc)}</b> em estoque acima ${S.meta === 'p25' ? 'do quartil mais curto' : 'da mediana'} do próprio setor${S.setor === 'todos' ? '' : ' · ' + curto(S.setor)} · ${S.ano} · fonte: CVM (DFP) e Banco Central (Selic)`;
 }
-fSelic.addEventListener('change', () => { if (fSelic.value === '') { S.taxa = null; render(); } });
-document.getElementById('lead').textContent =
-  `${E.resumo.empresas} industriais de capital aberto, cinco anos de balanço. Em 2025, R$ ${num(E.resumo.excesso, 1)} bilhões estavam em estoque acima da mediana do próprio setor — R$ ${num(E.resumo.custo, 1)} bilhões por ano à Selic, antes de armazenagem e perda. Escolha um setor, mude a meta e veja quanto cada empresa poderia liberar.`;
-let tm; window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(renderEvo, 120); });
+let tm; window.addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => render(true), 120); });
 render();
 </script>
 </body>
