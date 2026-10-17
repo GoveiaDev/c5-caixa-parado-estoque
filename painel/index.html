@@ -14,11 +14,11 @@
   @font-face { font-family: 'Inter'; src: url('fonts/inter-latin.woff2') format('woff2'); font-weight: 300 800; font-display: swap; }
   @font-face { font-family: 'Source Code Pro'; src: url('fonts/source-code-pro-latin.woff2') format('woff2'); font-weight: 200 900; font-display: swap; }
   :root {
-    color-scheme: dark;
-    /* Paleta própria do C5 — caixa e dinheiro: fundo verde-escuro, dourado para o valor, verde para as barras */
-    --fundo: #0c1512; --fundo-fundo: #07100d; --cartao: rgba(237,248,240,.035); --cartao-forte: rgba(237,248,240,.065); --regua: rgba(237,248,240,.11);
-    --texto: #f4f8f5; --texto-2: #a3b8ad; --apoio: #6e857a; --acao: #15803d; --acao-clara: #5cc98f; --metrica: #f2b84b;
-    --metrica-fundo: rgba(242,184,75,.08); --metrica-borda: rgba(242,184,75,.38); --r: 10px;
+    color-scheme: light;
+    /* Paleta própria do C5 — fundo branco, verde para barras e botões, dourado escuro para o valor em reais */
+    --fundo: #ffffff; --fundo-fundo: #10201a; --cartao: #f6f8f7; --cartao-forte: #ecf1ee; --regua: #dfe7e2;
+    --texto: #10201a; --texto-2: #4b5f55; --apoio: #6b7f75; --acao: #15803d; --acao-clara: #3a9d68; --metrica: #a16207;
+    --metrica-fundo: rgba(161,98,7,.06); --metrica-borda: rgba(161,98,7,.35); --r: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--fundo); color: var(--texto); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
@@ -70,7 +70,7 @@
   .linha .n { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .linha .n small { color: var(--apoio); font-size: 11px; margin-left: 6px; }
   .linha .val { font-family: 'Source Code Pro', monospace; font-size: 12.5px; text-align: right; white-space: nowrap; }
-  .linha .barra { grid-column: 2 / -1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); position: relative; }
+  .linha .barra { grid-column: 2 / -1; height: 6px; border-radius: 3px; background: #e9efeb; position: relative; }
   .linha .barra i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--acao-clara); }
   .linha.sel .barra i { background: var(--metrica); }
   .nota { color: var(--apoio); font-size: 12px; margin-top: 10px; }
@@ -81,9 +81,9 @@
   .ficha .d { font-size: 11.5px; color: var(--texto-2); }
   .ficha .ganho .v { color: var(--metrica); }
   .regua-prazo { position: relative; height: 34px; margin: 18px 0 6px; }
-  .regua-prazo .trilho { position: absolute; left: 0; right: 0; top: 14px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.07); }
-  .regua-prazo .faixa { position: absolute; top: 14px; height: 6px; background: rgba(92,201,143,.35); border-radius: 3px; }
-  .regua-prazo .marca { position: absolute; top: 6px; width: 2px; height: 22px; background: #fff; }
+  .regua-prazo .trilho { position: absolute; left: 0; right: 0; top: 14px; height: 6px; border-radius: 3px; background: #e9efeb; }
+  .regua-prazo .faixa { position: absolute; top: 14px; height: 6px; background: rgba(58,157,104,.25); border-radius: 3px; }
+  .regua-prazo .marca { position: absolute; top: 6px; width: 2px; height: 22px; background: var(--texto); }
   .regua-prazo .marca span { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-family: 'Source Code Pro', monospace; font-size: 10.5px; color: var(--texto-2); white-space: nowrap; }
   .regua-prazo .emp { position: absolute; top: 9px; width: 16px; height: 16px; border-radius: 50%; margin-left: -8px; background: var(--metrica); border: 2px solid var(--fundo); }
   input[type=range] { width: 100%; accent-color: var(--metrica); height: 26px; cursor: pointer; }
@@ -91,7 +91,7 @@
 
   svg { display: block; width: 100%; height: auto; overflow: visible; }
   .eixo { font-family: 'Source Code Pro', monospace; font-size: 10.5px; fill: var(--apoio); }
-  .grade-linha { stroke: rgba(255,255,255,.07); stroke-width: 1; }
+  .grade-linha { stroke: #e3e9e5; stroke-width: 1; }
   .legenda { display: flex; gap: 14px; flex-wrap: wrap; margin: 0 0 8px; color: var(--texto-2); font-size: 12px; }
   .legenda span { display: inline-flex; align-items: center; gap: 6px; }
   .ponto { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
@@ -148,7 +148,7 @@
       <div><div class="rotulo">Acima da meta</div><div class="v" id="eExc">—</div><div class="d" id="eExcTxt">—</div></div>
     </div>
     <div class="alavanca">
-      <label class="rotulo" for="corte" style="display:block">E se reduzisse o prazo em <span id="corteTxt" class="mono" style="color:#fff">15 dias</span>?</label>
+      <label class="rotulo" for="corte" style="display:block">E se reduzisse o prazo em <span id="corteTxt" class="mono" style="color:var(--texto)">15 dias</span>?</label>
       <input type="range" id="corte" min="0" max="90" value="15">
       <div class="ficha">
         <div class="ganho"><div class="rotulo">Caixa liberado</div><div class="v" id="eLib">—</div><div class="d">uma vez, no balanço</div></div>
@@ -313,11 +313,11 @@ function renderEvo() {
   for (let v = 0; v <= maxE; v += passo) g += `<line class="grade-linha" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="eixo" x="${m.l - 6}" y="${Y(v) + 3.5}" text-anchor="end">${num(v)}</text>`;
   serie.forEach((s, i) => {
     g += `<rect x="${X(i) - bw * .3}" y="${Y(s.exc)}" width="${bw * .6}" height="${H - m.b - Y(s.exc)}" rx="3" fill="var(--acao-clara)" fill-opacity="${s.a === S.ano ? .9 : .45}"/>`;
-    g += `<text class="eixo" x="${X(i)}" y="${H - 8}" text-anchor="middle"${s.a === S.ano ? ' style="fill:#fff;font-weight:700"' : ''}>${s.a}</text>`;
-    g += `<text class="eixo" x="${X(i)}" y="${Y(s.exc) - 5}" text-anchor="middle" style="fill:#cfe0d6">${num(s.exc, 1)}</text>`;
+    g += `<text class="eixo" x="${X(i)}" y="${H - 8}" text-anchor="middle"${s.a === S.ano ? ' style="fill:#10201a;font-weight:700"' : ''}>${s.a}</text>`;
+    g += `<text class="eixo" x="${X(i)}" y="${Y(s.exc) - 5}" text-anchor="middle" style="fill:#4b5f55">${num(s.exc, 1)}</text>`;
   });
   g += `<path d="${serie.map((s, i) => `${i ? 'L' : 'M'}${X(i)},${Yc(s.custo)}`).join('')}" fill="none" stroke="var(--metrica)" stroke-width="2.5"/>`;
-  serie.forEach((s, i) => { g += `<circle cx="${X(i)}" cy="${Yc(s.custo)}" r="4" fill="var(--metrica)"/><text class="eixo" x="${X(i)}" y="${Yc(s.custo) - 9}" text-anchor="middle" style="fill:#fff;font-weight:700;paint-order:stroke;stroke:#0c1512;stroke-width:4px">${W < 520 ? '' : 'R$ '}${num(s.custo, 1)}</text>`; });
+  serie.forEach((s, i) => { g += `<circle cx="${X(i)}" cy="${Yc(s.custo)}" r="4" fill="var(--metrica)"/><text class="eixo" x="${X(i)}" y="${Yc(s.custo) - 9}" text-anchor="middle" style="fill:#7a4a05;font-weight:700;paint-order:stroke;stroke:#ffffff;stroke-width:4px">${W < 520 ? '' : 'R$ '}${num(s.custo, 1)}</text>`; });
   svgEvo.setAttribute('viewBox', `0 0 ${W} ${H}`); svgEvo.innerHTML = g;
   const p = serie[0], u = serie[serie.length - 1];
   document.getElementById('evoSub').textContent = S.taxa != null
